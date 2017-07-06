@@ -1,9 +1,13 @@
 <?php
+
+function myerr($msg) {
+	echo("<html><head><title>Error</title><body>$msg</body></html>");
+	die;
+}
+
 if (isset($_GET["error"]))
 {
-    echo("<pre>OAuth Error: " . $_GET["error"]."\n");
-    echo('<a href="index.php">Retry</a></pre>');
-    die;
+    myerr("<pre>OAuth Error: " . $_GET["error"]."\n".'<a href="?retry">Retry</a></pre>');
 }
 
 // FIXME: Set a cert file, or OAuth2 PHP module IGNORES SSL ISSUES
@@ -11,9 +15,9 @@ $authorizeUrl = 'https://www.coinbase.com/oauth/authorize';
 $accessTokenUrl = 'https://api.coinbase.com/oauth/token';
 $clientId = 'CLIENTID';
 $clientSecret = 'CLIENTSECRET';
-$userAgent = 'testing for now';
+$userAgent = 'KYC Poll';
 
-$redirectUrl = "https://luke.dashjr.org/tmp/code/cbtest/cbtest_ssl.php";
+$redirectUrl = "https://luke.dashjr.org/programs/kycpoll/coinbase.php";
 
 require("Client.php");
 require("GrantType/IGrantType.php");
@@ -24,6 +28,9 @@ $client->setCurlOption(CURLOPT_USERAGENT,$userAgent);
 // $client->setCurlOption(CURLOPT_HTTPHEADER, array("CB-VERSION: 2017-05-19"));
 $client->setCurlOption(CURLOPT_FOLLOWLOCATION, true);
 
+if (isset($_SESSION['access_token'])) {
+	// Pass through
+} else
 if (!isset($_GET["code"]))
 {
     $authUrl = $client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "wallet:payment-methods:read,wallet:payment-methods:limits", "state" => "dawgabsAv6"));
@@ -36,15 +43,51 @@ else
     $response = $client->getAccessToken($accessTokenUrl, "authorization_code", $params);
 
     $accessTokenResult = $response["result"];
-    $client->setAccessToken($accessTokenResult["access_token"]);
-    $client->setAccessTokenType(OAuth2\Client::ACCESS_TOKEN_BEARER);
+    $_SESSION['access_token'] = $accessTokenResult["access_token"];
+}
 
-    $response = $client->fetch("https://api.coinbase.com/v2/user");
+$client->setAccessToken($_SESSION["access_token"]);
+$client->setAccessTokenType(OAuth2\Client::ACCESS_TOKEN_BEARER);
 
-//     echo('<strong>Response for fetch user:</strong><pre>');
-//     print_r($response);
-//     echo('</pre>');
-    echo("Hello ".$response['result']['data']['name']." id ".$response['result']['data']['id']."<br>");
+$response = $client->fetch("https://api.coinbase.com/v2/user");
+if (!isset($response['result']['data']['id'])) {
+	unset($_SESSION['access_token']);
+	myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
+}
+
+echo('<html><head><title>KYCPoll</title></head><body>');
+echo("Hello ".$response['result']['data']['name']."<br>");
+echo('<br>');
+
+echo('<form method="POST">');
+
+function mypoll($id, $title, $options) {
+	echo("<h2>$title</h2>");
+	foreach ($options as $val => $desc) {
+		$ischecked = '';
+		// TODO: look up current selection
+		echo("<input type='radio' name='$id' value='$val'$ischecked> $desc<br>");
+	}
+}
+
+mypoll('segwit', 'Segwit', array(
+	'unconditional' => 'I support Segwit',
+	'compromise' => 'I consent to Segwit only bundled with a hardfork',
+	'oppose' => 'I oppose Segwit',
+));
+
+mypoll('bip148', 'BIP148', array(
+	'unconditional' => 'I unconditionally support BIP148',
+	'conditional' => 'I support BIP148 only if <input size="3" name="bip148_pct">% of users also support it',
+	'oppose' => 'I oppose BIP148',
+));
+
+mypoll('blocksizehf', 'Block size hardfork', array(
+	'unconditional' => 'I support a hardfork to increase block size',
+	'compromise' => 'I consent to a block size increase hardfork only if bundled with Segwit',
+	'oppose' => 'I oppose a block size increase hardfork',
+));
+
 
     $response = $client->fetch("https://api.coinbase.com/v2/payment-methods");
 
