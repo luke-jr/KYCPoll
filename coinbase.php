@@ -92,7 +92,7 @@ if ((!isset($_SESSION['userdata'])) || @$_POST['userdata_refresh']) {
 	$userdata = $_SESSION['userdata'];
 }
 
-echo('<div id="manager"><span id="save_button_placeholder"></span><button onclick="do_logout()">Logout</button></div>');
+echo('<div id="manager"><button onclick="do_logout()">Logout</button></div>');
 
 
 echo('<div id="welcome">');
@@ -102,6 +102,7 @@ datadisclosure();
 formbegin();
 echo('<input type="submit" name="userdata_refresh" value="Refresh data from Coinbase"><br>');
 datadisclosure_checkbox();
+echo('<span id="save_button_placeholder">You must agree to the terms before your input can be saved.</span>');
 
 echo('</div>');
 echo('<div class="polls">');
@@ -109,6 +110,7 @@ echo('<div class="polls">');
 polls();
 
 formend();
+
 pagefooter();
 
 ?>

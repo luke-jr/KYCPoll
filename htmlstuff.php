@@ -25,13 +25,12 @@ function formbegin() {
 }
 
 function datadisclosure_checkbox() {
-	echo('<input id="accept_terms" name="accept_terms" type="checkbox" onclick="accept_terms_clicked()"' . (@$_POST['accept_terms'] ? ' checked' : '') . '><label for="accept_terms">I agree that the server may save this data, and that there is no promise of this data being kept secure</label><br>');
+	echo('<p><input id="accept_terms" name="accept_terms" type="checkbox" onclick="accept_terms_clicked()"' . (@$_POST['accept_terms'] ? ' checked' : '') . '><label for="accept_terms">I agree that the server may save this data, and that there is no promise of this data being kept secure</label></p>');
 }
 
 function formend() {
 	echo("</form>");
 	echo('</div>');
-	echo("<br><br>(the save button is on the top-right corner of your window)");
 }
 
 function pagefooter() {

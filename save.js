@@ -34,6 +34,9 @@ function accept_terms_clicked() {
 	button.type = "button";
 	button.value = "Save";
 	button.onclick = save_answers;
+	while (placeholder.hasChildNodes()) {
+	    placeholder.removeChild(placeholder.lastChild);
+	}
 	placeholder.appendChild(button);
 }
 
