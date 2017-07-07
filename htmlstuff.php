@@ -14,8 +14,6 @@ function pageheader() {
 
 function datadisclosure() {
 	global $userdata;
-	echo('<div id="welcome">');
-	echo('<h1>Hello '.$userdata['coinbase_userdata']['data']['name'].'</h1>');
 	echo('<p>This data will be saved with your poll results. If there is too much personal information included, please contact luke-jr to improve the filtering <em>before</em> filling out the poll.</p>');
 	echo('<p>Note that if you have not completed KYC with Coinbase, your results will be saved but ignored until you complete KYC <em>and</em> resubmit your poll results.</p>');
 
@@ -28,9 +26,6 @@ function formbegin() {
 
 function datadisclosure_checkbox() {
 	echo('<input id="accept_terms" name="accept_terms" type="checkbox" onclick="accept_terms_clicked()"' . (@$_POST['accept_terms'] ? ' checked' : '') . '><label for="accept_terms">I agree that the server may save this data, and that there is no promise of this data being kept secure</label><br>');
-
-	echo('</div>');
-	echo('<div class="polls">');
 }
 
 function formend() {
@@ -43,12 +38,3 @@ function pagefooter() {
 	echo("</body></html>");
 }
 
-function redirectToCoinbase() {
-	echo("<div id='welcome'>");
-	echo("<h1>Hello!</h1>");
-	echo("<p>To access KYCPoll, please pass the KYC process to ensure you are a real person.</p>");
-	echo("<p>KYCPoll currently only supports Coinbase for KYC.</p>");
-
-	echo("<a href='coinbase.php'>Click here to continue</a>");
-	echo("</div>");
-}

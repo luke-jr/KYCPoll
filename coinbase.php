@@ -49,7 +49,7 @@ if (isset($_SESSION['access_token'])) {
 if (!isset($_GET["code"]))
 {
     $authUrl = $client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "wallet:payment-methods:read,wallet:payment-methods:limits", "state" => "dawgabsAv6"));
-    die("<a href='$authUrl'>Click here to login</a>");
+    die("<div id='welcome'><h1>Log in with Coinbase</h1><p>To verify, please login with Coinbase and authorize KYCPoll to review your account information.</p><a class='redirectLink' href='$authUrl'>Click here to login</a></div>");
 }
 else
 {
@@ -94,13 +94,17 @@ if ((!isset($_SESSION['userdata'])) || @$_POST['userdata_refresh']) {
 
 echo('<div id="manager"><span id="save_button_placeholder"></span><button onclick="do_logout()">Logout</button></div>');
 
-echo("Hello ".$userdata['coinbase_userdata']['data']['name']."<br>");
-echo('<br>');
+
+echo('<div id="welcome">');
+echo('<h1>Hello '.$userdata['coinbase_userdata']['data']['name'].'</h1>');
 
 datadisclosure();
 formbegin();
 echo('<input type="submit" name="userdata_refresh" value="Refresh data from Coinbase"><br>');
 datadisclosure_checkbox();
+
+echo('</div>');
+echo('<div class="polls">');
 
 polls();
 

@@ -26,6 +26,23 @@ padding-top: 0px;
 	box-shadow: 0px 0px 1ex Green;
 }
 
+a {
+    padding: 10px 25px 10px 25px;
+    color: #f4f4f4;
+    background: #3296d0;
+    font-weight: bold;
+    font-family: Arial,sans-serif;
+    border-radius: 4px;
+    border: solid 0 #e3edf4;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+}
+a:hover {
+    background: #2f8abf;
+    text-decoration: underline;
+}
+
 .pollsection {
 	border-collapse: collapse;
     width: 100%;
