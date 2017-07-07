@@ -1,0 +1,2 @@
+RewriteRule \.git - [F]
+RewriteRule secrets\.php - [F]
