@@ -94,13 +94,17 @@ if ((!isset($_SESSION['userdata'])) || @$_POST['userdata_refresh']) {
 
 echo('<div id="manager"><span id="save_button_placeholder"></span><button onclick="do_logout()">Logout</button></div>');
 
-echo("Hello ".$userdata['coinbase_userdata']['data']['name']."<br>");
-echo('<br>');
+
+echo('<div id="welcome">');
+echo('<h1>Hello '.$userdata['coinbase_userdata']['data']['name'].'</h1>');
 
 datadisclosure();
 formbegin();
 echo('<input type="submit" name="userdata_refresh" value="Refresh data from Coinbase"><br>');
 datadisclosure_checkbox();
+
+echo('</div>');
+echo('<div class="polls">');
 
 polls();
 
