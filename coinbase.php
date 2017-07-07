@@ -57,30 +57,39 @@ else
 
     $accessTokenResult = $response["result"];
     $_SESSION['access_token'] = $accessTokenResult["access_token"];
+    unset($_SESSION['userdata']);
 }
 
-$client->setAccessToken($_SESSION["access_token"]);
-$client->setAccessTokenType(OAuth2\Client::ACCESS_TOKEN_BEARER);
+$do_save = @$_POST['accept_terms'];
 
-$response = $client->fetch("https://api.coinbase.com/v2/user");
-if (!isset($response['result']['data']['id'])) {
-	unset($_SESSION['access_token']);
-	myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
+if ((!isset($_SESSION['userdata'])) || @$_POST['userdata_refresh']) {
+	$client->setAccessToken($_SESSION["access_token"]);
+	$client->setAccessTokenType(OAuth2\Client::ACCESS_TOKEN_BEARER);
+	
+	$response = $client->fetch("https://api.coinbase.com/v2/user");
+	if (!isset($response['result']['data']['id'])) {
+		unset($_SESSION['access_token']);
+		myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
+	}
+	
+	$userdata = array(
+		'uuid' => 'coinbase_' . $response['result']['data']['id'],
+		'coinbase_userdata' => $response['result'],
+	);
+	
+	$response = $client->fetch("https://api.coinbase.com/v2/payment-methods");
+	$userdata['coinbase_payment_methods'] = $response['result'];
+	
+	$_SESSION['userdata'] = $userdata;
+	$do_save = false;
+// 	echo "Loaded data from Coinbase!<br>";
+} else {
+	$userdata = $_SESSION['userdata'];
 }
-
-$coinbase_userdata = $response['result'];
-
-$userdata = array(
-	'uuid' => 'coinbase_' . $response['result']['data']['id'],
-	'coinbase_userdata' => $response['result'],
-);
-
-$response = $client->fetch("https://api.coinbase.com/v2/payment-methods");
-$userdata['coinbase_payment_methods'] = $response['result'];
 
 echo('<div id="save_button_placeholder"></div>');
 
-echo("Hello ".$coinbase_userdata['data']['name']."<br>");
+echo("Hello ".$userdata['coinbase_userdata']['data']['name']."<br>");
 echo('<br>');
 
 echo('This data will be saved with your poll results. If there is too much personal information included, please contact luke-jr to improve the filtering <em>before</em> filling out the poll.<br>');
@@ -88,6 +97,7 @@ echo('Note that if you have not completed KYC with Coinbase, your results will b
 
 echo('<textarea readonly style="width:100%" rows="15">' . htmlentities(json_encode($userdata, JSON_PRETTY_PRINT), ENT_HTML5 | ENT_NOQUOTES) . '</textarea>');
 echo('<form action="#" method="post" id="pollform">');
+echo('<input type="submit" name="userdata_refresh" value="Refresh data from Coinbase"><br>');
 // echo('<input type="hidden" name="ABC" value="DEF" id="ABC"><input type="submit"></form>');
 // echo('<pre>');var_dump($_POST);echo('</pre>');
 echo('<input id="accept_terms" name="accept_terms" type="checkbox" onclick="accept_terms_clicked()"' . (@$_POST['accept_terms'] ? ' checked' : '') . '><label for="accept_terms">I agree that the server may save this data, and that there is no promise of this data being kept secure</label><br>');
