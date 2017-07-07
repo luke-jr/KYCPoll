@@ -49,7 +49,7 @@ if (isset($_SESSION['access_token'])) {
 if (!isset($_GET["code"]))
 {
     $authUrl = $client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "wallet:payment-methods:read,wallet:payment-methods:limits", "state" => "dawgabsAv6"));
-    die("<a href='$authUrl'>Click here to login</a>");
+    die("<div id='welcome'><h1>Log in with Coinbase</h1><p>To verify, please login with Coinbase and authorize KYCPoll to review your account information.</p><a class='redirectLink' href='$authUrl'>Click here to login</a></div>");
 }
 else
 {
