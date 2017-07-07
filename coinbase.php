@@ -1,9 +1,18 @@
 <?php
 
+$i_am_not_direct = true;
+
+require_once('secrets.php');
 require('kycpoll.php');
 
+echo('<!DOCTYPE html>');
+echo("<html lang='en'><head><title>KYCPoll</title>");
+echo('<link rel="stylesheet" type="text/css" href="style.css">');
+echo('<script src="save.js" type="text/javascript"></script>');
+echo("</head><body>");
+
 function myerr($msg) {
-	echo("<html><head><title>Error</title><body>$msg</body></html>");
+	echo("Error: $msg</body></html>");
 	die;
 }
 
@@ -15,8 +24,8 @@ if (isset($_GET["error"]))
 // FIXME: Set a cert file, or OAuth2 PHP module IGNORES SSL ISSUES
 $authorizeUrl = 'https://www.coinbase.com/oauth/authorize';
 $accessTokenUrl = 'https://api.coinbase.com/oauth/token';
-$clientId = 'CLIENTID';
-$clientSecret = 'CLIENTSECRET';
+$clientId = $coinbase_clientId;
+$clientSecret = $coinbase_clientSecret;
 $userAgent = 'KYC Poll';
 
 $redirectUrl = "https://luke.dashjr.org/programs/kycpoll/coinbase.php";
@@ -29,6 +38,8 @@ $client = new OAuth2\Client($clientId, $clientSecret, OAuth2\Client::AUTH_TYPE_U
 $client->setCurlOption(CURLOPT_USERAGENT,$userAgent);
 // $client->setCurlOption(CURLOPT_HTTPHEADER, array("CB-VERSION: 2017-05-19"));
 $client->setCurlOption(CURLOPT_FOLLOWLOCATION, true);
+
+session_start();
 
 if (isset($_SESSION['access_token'])) {
 	// Pass through
@@ -57,6 +68,8 @@ if (!isset($response['result']['data']['id'])) {
 	myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
 }
 
+$coinbase_userdata = $response['result'];
+
 $userdata = array(
 	'uuid' => 'coinbase_' . $response['result']['data']['id'],
 	'coinbase_userdata' => $response['result'],
@@ -65,15 +78,23 @@ $userdata = array(
 $response = $client->fetch("https://api.coinbase.com/v2/payment-methods");
 $userdata['coinbase_payment_methods'] = $response['result'];
 
-echo('<html><head><title>KYCPoll</title></head><body>');
-echo("Hello ".$response['result']['data']['name']."<br>");
+echo('<div id="save_button_placeholder"></div>');
+
+echo("Hello ".$coinbase_userdata['data']['name']."<br>");
 echo('<br>');
 
-echo('This data will be saved with your poll results. If there is too much personal information included, please contact luke-jr to improve the filtering <em>before</em> filling out the poll.')
-echo('<pre>' . json_encode($userdata) . '</pre>');
+echo('This data will be saved with your poll results. If there is too much personal information included, please contact luke-jr to improve the filtering <em>before</em> filling out the poll.<br>');
+echo('Note that if you have not completed KYC with Coinbase, your results will be saved but ignored until you complete KYC <em>and</em> resubmit your poll results.<br>');
 
-echo('Note that if you have not completed KYC with Coinbase, your results will be saved but ignored until you complete KYC <em>and</em> resubmit your poll results.');
+echo('<textarea readonly style="width:100%" rows="15">' . htmlentities(json_encode($userdata, JSON_PRETTY_PRINT), ENT_HTML5 | ENT_NOQUOTES) . '</textarea>');
+echo('<form action="#" method="get" id="pollform">');
+echo('<pre>');var_dump($_POST);echo('</pre>');
+echo('<input id="accept_terms" name="accept_terms" type="checkbox" onclick="accept_terms_clicked()"' . (@$_POST['accept_terms'] ? ' checked' : '') . '><label for="accept_terms">I agree that the server may save this data, and that there is no promise of this data being kept secure</label><br>');
 
 polls();
+
+echo("</form>");
+echo("<br><br>(the save button is on the top-right corner of your window)");
+echo("</body></html>");
 
 ?>

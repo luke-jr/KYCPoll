@@ -1,0 +1,23 @@
+#save_button_placeholder {
+	position: fixed;
+	top: 1ex;
+	right: 1ex;
+}
+#save_button {
+	box-shadow: 0px 0px 1ex Green;
+}
+
+.pollsection {
+	border-collapse: collapse;
+}
+.pollsection th,td {
+	border: 1px solid black;
+	padding: 0.5ex 1ex;
+}
+.poll th {
+	text-align: left;
+}
+.poll td {
+	text-align: center;
+	width: 5%;
+}
