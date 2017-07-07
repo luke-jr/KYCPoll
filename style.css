@@ -1,3 +1,21 @@
+body {
+font-family: 'Roboto', sans-serif;
+display: flex;
+flex-direction: column;
+background-color: #d1ecff;
+align-items: center;
+}
+#welcome {
+    width: 80%;
+    max-width: 900px;
+    padding: 20px;
+    background: white;
+    box-shadow: 0px 0px 5px white;
+    border-radius: 10px;
+padding-top: 0px;
+	margin-bottom: 20px;
+}
+
 #manager {
 	position: fixed;
 	top: 1ex;
@@ -10,15 +28,95 @@
 
 .pollsection {
 	border-collapse: collapse;
+    width: 100%;
+	margin-bottom: 60px;
+}
+
+.pollsection tr:nth-child(even) {
+	background-color: #eef;
 }
 .pollsection th,td {
-	border: 1px solid black;
 	padding: 0.5ex 1ex;
 }
-.poll th {
-	text-align: left;
+th:first-child {
+	text-align: left !important;
+}
+th {
+	height: 40px;
 }
 .poll td {
 	text-align: center;
-	width: 5%;
+	width: 10%;
+}
+.poll td:first-child {
+	width: 40%;
+}
+
+#accept_terms {
+	margin-top: 12px;
+}
+
+h1 { color: #333; font-family: 'Helvetica Neue', sans-serif; font-size: 35px; font-weight: bold; letter-spacing: -1px; line-height: 1; }
+
+
+.polls {
+    width: 80%;
+    max-width: 900px;
+    padding: 20px;
+    background: white;
+    box-shadow: 0px 0px 5px white;
+    border-radius: 10px;
+}
+
+input[type=radio]{
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  position: relative;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 40px;
+  width: 40px;
+  transition: all 0.15s ease-out 0s;
+  background: #cbd1d8;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 0.5rem;
+  outline: none;
+  position: relative;
+  z-index: 1000;
+}
+input[type=radio]:hover {
+  background: #b3cbdc;
+}
+input[type=radio]:checked {
+  background: #519ed4;
+}
+input[type=radio]:checked::before {
+  height: 40px;
+  width: 40px;
+  position: absolute;
+  content: '✔';
+  display: inline-block;
+  font-size: 26.66667px;
+  text-align: center;
+  line-height: 40px;
+}
+input[type=radio]:checked::after {
+  background: #40e0d0;
+  content: '';
+  display: block;
+  position: relative;
+  z-index: 100;
+}
+input[type=radio] {
+  border-radius: 50%;
+}
+input[type=radio]::after {
+  border-radius: 50%;
 }
