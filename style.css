@@ -1,9 +1,10 @@
-#save_button_placeholder {
+#manager {
 	position: fixed;
 	top: 1ex;
 	right: 1ex;
 }
 #save_button {
+	margin-right: 1ex;
 	box-shadow: 0px 0px 1ex Green;
 }
 

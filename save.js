@@ -1,3 +1,11 @@
+function disable_form(form) {
+	var to_disable = form.getElementsByTagName('input');
+	for (var i = 0; i < to_disable.length; ++i) {
+		to_disable[i].readonly = true;
+	}
+	form.style.opacity = 0.5;
+}
+
 function save_answers() {
 	var accept_checkbox = document.getElementById('accept_terms');
 	if (!accept_checkbox.checked) {
@@ -7,11 +15,7 @@ function save_answers() {
 	var button = document.getElementById('save_button');
 	button.value = 'Saving...';
 	var form = document.getElementById('pollform');
-	var to_disable = form.getElementsByTagName('input');
-	for (var i = 0; i < to_disable.length; ++i) {
-		to_disable[i].readonly = true;
-	}
-	form.style.opacity = 0.5;
+	disable_form(form);
 	form.submit();
 }
 
@@ -34,3 +38,20 @@ function accept_terms_clicked() {
 }
 
 window.addEventListener('load', accept_terms_clicked, false);
+
+function do_logout() {
+	if (!window.confirm("Any unsaved changes will be lost! Are you sure you want to logout?")) {
+		return;
+	}
+	
+	var form = document.getElementById('pollform');
+	disable_form(form);
+	
+	var logout_elem = document.createElement('input');
+	logout_elem.type = 'hidden';
+	logout_elem.name = 'logout';
+	logout_elem.value = '1';
+	form.appendChild(logout_elem);
+	
+	form.submit();
+}

@@ -37,14 +37,18 @@ $client->setCurlOption(CURLOPT_FOLLOWLOCATION, true);
 
 session_start();
 
+if (@$_POST['logout']) {
+	session_unset();
+	echo("Logged out.\n");
+}
+
 if (isset($_SESSION['access_token'])) {
 	// Pass through
 } else
 if (!isset($_GET["code"]))
 {
     $authUrl = $client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "wallet:payment-methods:read,wallet:payment-methods:limits", "state" => "dawgabsAv6"));
-    header("Location: ".$authUrl);
-    die("Redirect");
+    die("<a href='$authUrl'>Click here to login</a>");
 }
 else
 {
@@ -52,8 +56,11 @@ else
     $response = $client->getAccessToken($accessTokenUrl, "authorization_code", $params);
 
     $accessTokenResult = $response["result"];
+    session_unset();
+	if (!isset($accessTokenResult["access_token"])) {
+		myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
+	}
     $_SESSION['access_token'] = $accessTokenResult["access_token"];
-    unset($_SESSION['userdata']);
 }
 
 $do_save = @$_POST['accept_terms'];
@@ -64,11 +71,12 @@ if ((!isset($_SESSION['userdata'])) || @$_POST['userdata_refresh']) {
 	
 	$response = $client->fetch("https://api.coinbase.com/v2/user");
 	if (!isset($response['result']['data']['id'])) {
-		unset($_SESSION['access_token']);
+		session_unset();
 		myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
 	}
 	
 	$userdata = array(
+		'kycsource' => 'coinbase',
 		'uuid' => 'coinbase_' . $response['result']['data']['id'],
 		'coinbase_userdata' => $response['result'],
 	);
@@ -83,7 +91,7 @@ if ((!isset($_SESSION['userdata'])) || @$_POST['userdata_refresh']) {
 	$userdata = $_SESSION['userdata'];
 }
 
-echo('<div id="save_button_placeholder"></div>');
+echo('<div id="manager"><span id="save_button_placeholder"></span><button onclick="do_logout()">Logout</button></div>');
 
 echo("Hello ".$userdata['coinbase_userdata']['data']['name']."<br>");
 echo('<br>');
