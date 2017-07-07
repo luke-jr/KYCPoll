@@ -4,14 +4,14 @@ function save_answers() {
 		alert('Please accept the terms first');
 		return;
 	}
-	accept_checkbox.disabled = true;
 	var button = document.getElementById('save_button');
 	button.value = 'Saving...';
 	var form = document.getElementById('pollform');
 	var to_disable = form.getElementsByTagName('input');
 	for (var i = 0; i < to_disable.length; ++i) {
-		to_disable[i].disabled = true;
+		to_disable[i].readonly = true;
 	}
+	form.style.opacity = 0.5;
 	form.submit();
 }
 
@@ -32,3 +32,5 @@ function accept_terms_clicked() {
 	button.onclick = save_answers;
 	placeholder.appendChild(button);
 }
+
+window.addEventListener('load', accept_terms_clicked, false);

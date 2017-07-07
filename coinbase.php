@@ -87,8 +87,9 @@ echo('This data will be saved with your poll results. If there is too much perso
 echo('Note that if you have not completed KYC with Coinbase, your results will be saved but ignored until you complete KYC <em>and</em> resubmit your poll results.<br>');
 
 echo('<textarea readonly style="width:100%" rows="15">' . htmlentities(json_encode($userdata, JSON_PRETTY_PRINT), ENT_HTML5 | ENT_NOQUOTES) . '</textarea>');
-echo('<form action="#" method="get" id="pollform">');
-echo('<pre>');var_dump($_POST);echo('</pre>');
+echo('<form action="#" method="post" id="pollform">');
+// echo('<input type="hidden" name="ABC" value="DEF" id="ABC"><input type="submit"></form>');
+// echo('<pre>');var_dump($_POST);echo('</pre>');
 echo('<input id="accept_terms" name="accept_terms" type="checkbox" onclick="accept_terms_clicked()"' . (@$_POST['accept_terms'] ? ' checked' : '') . '><label for="accept_terms">I agree that the server may save this data, and that there is no promise of this data being kept secure</label><br>');
 
 polls();
