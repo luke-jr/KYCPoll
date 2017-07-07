@@ -3,6 +3,7 @@
 $i_am_not_direct = true;
 
 require_once('secrets.php');
+require('htmlstuff.php');
 require('kycpoll.php');
 
 pageheader();
