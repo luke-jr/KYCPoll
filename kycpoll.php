@@ -41,15 +41,19 @@ function mypoll($id, $title, $options) {
 	echo("</tr>");
 	foreach ($options as $val => $desc) {
 // 		$pdo->prepare('INSERT INTO polls (category, name, description) VALUES (:c, :n, :d)')->execute(array(':c' => $id, ':n' => $val, ':d' => $desc));
-		$stmt_find_poll->execute(array(':category' => $id, ':name' => $val));
-		$pollid = $stmt_find_poll->fetchColumn();
-		if ($pollid === FALSE) {
-			myerr("Unknown poll $id/$val");
-		}
-		$stmt_find_answer->execute(array(':userid' => $sql_userid, ':pollid' => $pollid));
-		$answer = $stmt_find_answer->fetchColumn();
-		if ($answer === FALSE) {
-			$answer = 'no_answer';
+		if (isset($_POST["$id/$val"])) {
+			$answer = $_POST["$id/$val"];
+		} else {
+			$stmt_find_poll->execute(array(':category' => $id, ':name' => $val));
+			$pollid = $stmt_find_poll->fetchColumn();
+			if ($pollid === FALSE) {
+				myerr("Unknown poll $id/$val");
+			}
+			$stmt_find_answer->execute(array(':userid' => $sql_userid, ':pollid' => $pollid));
+			$answer = $stmt_find_answer->fetchColumn();
+			if ($answer === FALSE) {
+				$answer = 'no_answer';
+			}
 		}
 		echo("<tr class='poll'><th>$desc</th>");
 		foreach ($opts as $opt => $optdesc) {
