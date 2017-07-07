@@ -82,19 +82,8 @@ function record_userdata() {
 	$stmt_add_userinfo->execute(array(':userid' => $sql_userid, ':info' => json_encode($userdata)));
 }
 
-$stmt_find_poll = $pdo->prepare("SELECT id FROM polls WHERE category = :category AND name = :name LIMIT 1");
 $stmt_find_answer = $pdo->prepare("SELECT answer FROM answers WHERE userid = :userid AND pollid = :pollid ORDER BY time DESC LIMIT 1");
 $stmt_update_answer = $pdo->prepare("INSERT INTO answers (userid, pollid, answer) VALUES (:userid, :pollid, :answer)");
-
-function get_pollid($id, $val) {
-	global $stmt_find_poll;
-	$stmt_find_poll->execute(array(':category' => $id, ':name' => $val));
-	$pollid = $stmt_find_poll->fetchColumn();
-	if ($pollid === FALSE) {
-		myerr("Unknown poll $id/$val");
-	}
-	return $pollid;
-}
 
 function get_cur_answer($pollid) {
 	global $sql_userid;
@@ -112,10 +101,13 @@ function get_cur_answer($pollid) {
 	return $answer;
 }
 
-function mypoll($id, $title, $options) {
+$stmt_get_polls = $pdo->prepare("SELECT id, name, description FROM polls WHERE category = :category ORDER BY id");
+
+function mypoll($id, $title) {
 	global $opts;
 	global $sql_userid;
 	global $pdo;
+	global $stmt_get_polls;
 	global $stmt_update_answer;
 	global $do_save;
 	
@@ -126,19 +118,20 @@ function mypoll($id, $title, $options) {
 		echo("<th>$optdesc</th>");
 	}
 	echo("</tr>");
-	foreach ($options as $val => $desc) {
-// 		$pdo->prepare('INSERT INTO polls (category, name, description) VALUES (:c, :n, :d)')->execute(array(':c' => $id, ':n' => $val, ':d' => $desc));
+	$stmt_get_polls->execute(array(':category' => $id));
+	while (($row = $stmt_get_polls->fetch(PDO::FETCH_ASSOC)) !== false) {
+		$pollid = $row['id'];
+		$val = $row['name'];
+		$desc = $row['description'];
 		if (isset($_POST["$id/$val"])) {
 			$answer = $_POST["$id/$val"];
 			if ($do_save) {
-				$pollid = get_pollid($id, $val);
 				$cur_answer = get_cur_answer($pollid);
 				if ($cur_answer != $answer) {
 					$stmt_update_answer->execute(array(':userid' => $sql_userid, ':pollid' => $pollid, ':answer' => $answer));
 				}
 			}
 		} else {
-			$pollid = get_pollid($id, $val);
 			$answer = get_cur_answer($pollid);
 		}
 		echo("<tr class='poll'><th>$desc</th>");
@@ -160,25 +153,7 @@ function polls() {
 		record_userdata();
 	}
 	
-	mypoll('segwit', 'Segwit', array(
-		'use' => 'I wish to use Segwit myself',
-		'softfork' => 'I am okay with others using Segwit',
-		'hfbundle' => 'Segwit is okay only bundled with a hardfork',
-	));
-	
-	mypoll('bip148', 'BIP148', array(
-		'unconditional' => 'I unconditionally support BIP148',
-		'ecmajority' => 'If the economic majority supports BIP148, I will support it too',
-		'minermajority' => 'If <strong>51%</strong> of miners support BIP148, I will support it too',
-		'minerminority' => 'If <strong>15%</strong> of miners support BIP148, I will support it too',
-		'powchange' => 'If miners block BIP148, I support a change to the proof-of-work algorithm',
-		'oppose' => 'I oppose BIP148',
-	));
-	
-	mypoll('blocksizehf', 'Block size hardfork', array(
-		'unconditional' => 'I support a hardfork to increase block size unconditionally',
-		'consensus' => 'I support a hardfork to increase block size only with consensus',
-		'segwitbundle' => 'I support a block size increase hardfork only if bundled with Segwit',
-		'oppose' => 'I oppose a block size increase hardfork',
-	));
+	mypoll('segwit', 'Segwit');
+	mypoll('bip148', 'BIP148');
+	mypoll('blocksizehf', 'Block size hardfork');
 }
