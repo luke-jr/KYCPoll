@@ -102,12 +102,13 @@ datadisclosure();
 formbegin();
 echo('<input type="submit" name="userdata_refresh" value="Refresh data from Coinbase"><br>');
 datadisclosure_checkbox();
-echo('<span id="save_button_placeholder">You must agree to the terms before your input can be saved.</span>');
 
 echo('</div>');
 echo('<div class="polls">');
 
 polls();
+
+echo('<span id="save_button_placeholder">You must agree to the terms before your input can be saved.</span>');
 
 formend();
 
