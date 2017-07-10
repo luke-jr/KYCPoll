@@ -123,4 +123,7 @@ function polls() {
 	mypoll('segwit', 'Segwit');
 	mypoll('bip148', 'BIP148');
 	mypoll('blocksizehf', 'Block size hardfork');
+	mypoll('hardfork', 'Misc hardfork');
+	mypoll('softfork', 'Misc softfork');
+	mypoll('governance', 'Governance');
 }
