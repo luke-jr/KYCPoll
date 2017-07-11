@@ -14,9 +14,22 @@ $optcolours = array(
 	'strong_agree' => '#80ff80',
 );
 
-function pollresults($varbase, $pollid) {
-	global $opts, $optcolours;
+function getpollresults($pollid) {
 	global $pdo;
+	$rv = array();
+	$stmt = $pdo->prepare('SELECT answer, count FROM totals WHERE pollid = :pollid ORDER BY answer');
+	$stmt->execute(array(':pollid' => $pollid));
+	while (($row = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
+		$answer = $row['answer'];
+		$count = $row['count'];
+		
+		$rv[$answer] = $count;
+	}
+	return $rv;
+}
+
+function pollresults($varbase, $answers) {
+	global $opts, $optcolours;
 	
 	$htmlid = "viewpoll_$varbase";
 	$datavar = "polldata_$varbase";
@@ -29,14 +42,7 @@ function pollresults($varbase, $pollid) {
 	echo("<script>\n");
 	echo("$datavar=[");
 	
-	$mult = rand(1, 10000);
-	
-	$stmt = $pdo->prepare('SELECT answer, count FROM totals WHERE pollid = :pollid ORDER BY answer');
-	$stmt->execute(array(':pollid' => $pollid));
-	while (($row = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
-		$answer = $row['answer'];
-		$count = $row['count'] * $mult;
-		
+	foreach ($answers as $answer => $count) {
 		echo("{y:$count,color:'".$optcolours[$answer]."',text:'".$opts[$answer]."'},");
 	}
 	
@@ -56,9 +62,15 @@ function categoryresults($id, $title) {
 		$pollid = $row['id'];
 		$val = $row['name'];
 		$desc = $row['description'];
-		echo("<tr class='poll'><th>$desc</th>");
+		$answers = getpollresults($pollid);
+		echo("<tr class='poll'><th>");
+		echo($desc);
+		echo("<div class='answermeta'>");
+		echo("Total answers: " . array_sum($answers));
+		echo("</div>");
+		echo("</th>");
 		echo("<td>");
-		pollresults($id . '_' . $val, $pollid);
+		pollresults($id . '_' . $val, $answers);
 		echo("</td>");
 		echo("</tr>");
 	}

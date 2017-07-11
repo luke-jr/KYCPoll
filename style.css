@@ -138,3 +138,7 @@ input[type=radio] {
 input[type=radio]::after {
   border-radius: 50%;
 }
+
+.answermeta {
+	font-weight: normal;
+}
