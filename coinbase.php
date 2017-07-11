@@ -43,25 +43,44 @@ if (@$_POST['logout']) {
 	echo("Logged out.\n");
 }
 
-if (isset($_SESSION['access_token'])) {
-	// Pass through
-} else
-if (!isset($_GET["code"]))
-{
-    $authUrl = $client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "wallet:payment-methods:read,wallet:payment-methods:limits", "state" => "dawgabsAv6"));
-    die("<div id='welcome'><h1>Log in with Coinbase</h1><p>To verify, please login with Coinbase and authorize KYCPoll to review your account information.</p><a class='redirectLink' href='$authUrl'>Click here to login</a></div>");
-}
-else
-{
-    $params = array("code" => $_GET["code"], "redirect_uri" => $redirectUrl);
-    $response = $client->getAccessToken($accessTokenUrl, "authorization_code", $params);
-
-    $accessTokenResult = $response["result"];
-    session_unset();
-	if (!isset($accessTokenResult["access_token"])) {
-		myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
+if (!isset($_SESSION['access_token'])) {
+	if (!isset($_GET['code'])) {
+		$authUrl = $client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "wallet:payment-methods:read,wallet:payment-methods:limits", "state" => "dawgabsAv6"));
+		die("<div id='welcome'><h1>Log in with Coinbase</h1><p>To verify, please login with Coinbase and authorize KYCPoll to review your account information.</p><a class='redirectLink' href='$authUrl'>Click here to login</a></div>");
+	} else {
+		$params = array("code" => $_GET["code"], "redirect_uri" => $redirectUrl);
+		$response = $client->getAccessToken($accessTokenUrl, "authorization_code", $params);
+		
+		$accessTokenResult = $response["result"];
+		session_unset();
+		if (!isset($accessTokenResult["access_token"])) {
+			myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
+		}
+		$_SESSION['access_token'] = $accessTokenResult["access_token"];
+		unset($_GET['code']);
 	}
-    $_SESSION['access_token'] = $accessTokenResult["access_token"];
+}
+
+$old_client = new OAuth2\Client($coinbase_old_clientId, $coinbase_old_clientSecret, OAuth2\Client::AUTH_TYPE_URI);  // or AUTH_TYPE_FORM??
+$old_client->setCurlOption(CURLOPT_USERAGENT,$userAgent);
+// $client->setCurlOption(CURLOPT_HTTPHEADER, array("CB-VERSION: 2017-05-19"));
+$old_client->setCurlOption(CURLOPT_FOLLOWLOCATION, true);
+
+if (!isset($_SESSION['access_token_old'])) {
+	if (!isset($_GET['code'])) {
+		$authUrl = $old_client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "user", "state" => "dawgabsAv6"));
+		die("<div id='welcome'><h1>Log in with Coinbase</h1><p>Due to API limitations, we need you to login with Coinbase and authorize KYCPoll to review your account information one more time.</p><a class='redirectLink' href='$authUrl'>Click here to login</a></div>");
+	} else {
+		$params = array("code" => $_GET["code"], "redirect_uri" => $redirectUrl);
+		$response = $old_client->getAccessToken($accessTokenUrl, "authorization_code", $params);
+		
+		$accessTokenResult = $response["result"];
+		if (!isset($accessTokenResult["access_token"])) {
+			session_unset();
+			myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
+		}
+		$_SESSION['access_token_old'] = $accessTokenResult["access_token"];
+	}
 }
 
 $do_save = @$_POST['accept_terms'];
@@ -84,6 +103,11 @@ if ((!isset($_SESSION['userdata'])) || @$_POST['userdata_refresh']) {
 	
 	$response = $client->fetch("https://api.coinbase.com/v2/payment-methods");
 	$userdata['coinbase_payment_methods'] = $response['result'];
+	
+	$old_client->setAccessToken($_SESSION["access_token_old"]);
+	$old_client->setAccessTokenType(OAuth2\Client::ACCESS_TOKEN_BEARER);
+	$response = $old_client->fetch("https://api.coinbase.com/v1/users/self");
+	$userdata['coinbase_userdata_old'] = $response['result'];
 	
 	$_SESSION['userdata'] = $userdata;
 	$do_save = false;
