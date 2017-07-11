@@ -16,7 +16,7 @@ function myerr($msg) {
 
 if (isset($_GET["error"]))
 {
-    myerr("<pre>OAuth Error: " . $_GET["error"]."\n".'<a href="?retry">Retry</a></pre>');
+    myerr("<pre>OAuth Error: " . $_GET["error"]."\n".'<a class="btn" href="?retry">Retry</a></pre>');
 }
 
 // FIXME: Set a cert file, or OAuth2 PHP module IGNORES SSL ISSUES
@@ -47,7 +47,7 @@ if (@$_POST['logout']) {
 if (!isset($_SESSION['access_token'])) {
 	if (!isset($_GET['code'])) {
 		$authUrl = $client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "wallet:payment-methods:read,wallet:payment-methods:limits", "state" => "dawgabsAv6"));
-		die("<div id='welcome'><h1>Log in with Coinbase</h1><p>To verify, please login with Coinbase and authorize KYCPoll to review your account information.</p><a class='redirectLink' href='$authUrl'>Click here to login</a></div>");
+		die("<div id='welcome'><h1>Log in with Coinbase</h1><p>To verify, please login with Coinbase and authorize KYCPoll to review your account information.</p><a class='btn redirectLink' href='$authUrl'>Click here to login</a></div>");
 	} else {
 		$params = array("code" => $_GET["code"], "redirect_uri" => $redirectUrl);
 		$response = $client->getAccessToken($accessTokenUrl, "authorization_code", $params);
@@ -55,7 +55,7 @@ if (!isset($_SESSION['access_token'])) {
 		$accessTokenResult = $response["result"];
 		session_unset();
 		if (!isset($accessTokenResult["access_token"])) {
-			myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
+			myerr("Failed to get Coinbase id; <a class='btn' href='?retry'>Click here to retry</a>");
 		}
 		$_SESSION['access_token'] = $accessTokenResult["access_token"];
 		unset($_GET['code']);
@@ -70,7 +70,7 @@ $old_client->setCurlOption(CURLOPT_FOLLOWLOCATION, true);
 if (!isset($_SESSION['access_token_old'])) {
 	if (!isset($_GET['code'])) {
 		$authUrl = $old_client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "user", "state" => "dawgabsAv6"));
-		die("<div id='welcome'><h1>Log in with Coinbase</h1><p>Due to API limitations, we need you to login with Coinbase and authorize KYCPoll to review your account information one more time.</p><a class='redirectLink' href='$authUrl'>Click here to login</a></div>");
+		die("<div id='welcome'><h1>Log in with Coinbase</h1><p>Due to API limitations, we need you to login with Coinbase and authorize KYCPoll to review your account information one more time.</p><a class='btn redirectLink' href='$authUrl'>Click here to login</a></div>");
 	} else {
 		$params = array("code" => $_GET["code"], "redirect_uri" => $redirectUrl);
 		$response = $old_client->getAccessToken($accessTokenUrl, "authorization_code", $params);
@@ -78,7 +78,7 @@ if (!isset($_SESSION['access_token_old'])) {
 		$accessTokenResult = $response["result"];
 		if (!isset($accessTokenResult["access_token"])) {
 			session_unset();
-			myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
+			myerr("Failed to get Coinbase id; <a class='btn' href='?retry'>Click here to retry</a>");
 		}
 		$_SESSION['access_token_old'] = $accessTokenResult["access_token"];
 	}
@@ -93,7 +93,7 @@ if ((!isset($_SESSION['userdata'])) || @$_POST['userdata_refresh']) {
 	$response = $client->fetch("https://api.coinbase.com/v2/user");
 	if (!isset($response['result']['data']['id'])) {
 		session_unset();
-		myerr("Failed to get Coinbase id; <a href='?retry'>Click here to retry</a>");
+		myerr("Failed to get Coinbase id; <a class='btn' href='?retry'>Click here to retry</a>");
 	}
 	
 	$userdata = array(
