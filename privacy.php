@@ -30,4 +30,5 @@ function filter_userdata(&$userdata) {
 		}
 	}
 	filter_if_exists($userdata['coinbase_userdata_old']['user']['balance']['amount']);
+	filter_if_exists($userdata['coinbase_userdata_old']['user']['email']);
 }
