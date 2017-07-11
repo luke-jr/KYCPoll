@@ -27,6 +27,7 @@ padding-top: 0px;
 }
 
 a.btn {
+	margin: 0 1em;
     padding: 10px 25px 10px 25px;
     color: #f4f4f4;
     background: #3296d0;
