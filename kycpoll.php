@@ -111,7 +111,17 @@ function mypoll($id, $title) {
 	echo("</table>");
 }
 
+$pollcategories = array(
+	'segwit' => 'Segwit',
+	'bip148' => 'BIP148',
+	'blocksizehf' => 'Block size hardfork',
+	'hardfork' => 'Misc hardfork',
+	'softfork' => 'Misc softfork',
+	'governance' => 'Governance',
+);
+
 function polls() {
+	global $pollcategories;
 	global $userdata;
 	global $do_save;
 	
@@ -120,10 +130,7 @@ function polls() {
 		record_userdata();
 	}
 	
-	mypoll('segwit', 'Segwit');
-	mypoll('bip148', 'BIP148');
-	mypoll('blocksizehf', 'Block size hardfork');
-	mypoll('hardfork', 'Misc hardfork');
-	mypoll('softfork', 'Misc softfork');
-	mypoll('governance', 'Governance');
+	foreach ($pollcategories as $categoryname => $categoryhuman) {
+		mypoll($categoryname, $categoryhuman);
+	}
 }
