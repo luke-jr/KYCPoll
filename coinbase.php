@@ -5,6 +5,7 @@ $i_am_not_direct = true;
 require_once('secrets.php');
 require('htmlstuff.php');
 require('kycpoll.php');
+require('privacy.php');
 
 pageheader();
 
@@ -109,6 +110,7 @@ if ((!isset($_SESSION['userdata'])) || @$_POST['userdata_refresh']) {
 	$response = $old_client->fetch("https://api.coinbase.com/v1/users/self");
 	$userdata['coinbase_userdata_old'] = $response['result'];
 	
+	filter_userdata($userdata);
 	$_SESSION['userdata'] = $userdata;
 	$do_save = false;
 // 	echo "Loaded data from Coinbase!<br>";
