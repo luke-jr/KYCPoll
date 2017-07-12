@@ -118,6 +118,7 @@ $pollcategories = array(
 	'hardfork' => 'Misc hardfork',
 	'softfork' => 'Misc softfork',
 	'governance' => 'Governance',
+	'social' => 'Social media',
 );
 
 function polls() {
