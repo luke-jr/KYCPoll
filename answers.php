@@ -55,6 +55,7 @@ function categoryresults($id, $title) {
 	global $pdo;
 	global $stmt_get_polls;
 	
+	echo("<a name='$id' id='$id'>");
 	echo("<h1>$title</h1>");
 	echo('<table class="pollsection">');
 	$stmt_get_polls->execute(array(':category' => $id));
@@ -75,6 +76,7 @@ function categoryresults($id, $title) {
 		echo("</tr>");
 	}
 	echo("</table>");
+	echo("</a>");
 }
 
 function allresults() {
