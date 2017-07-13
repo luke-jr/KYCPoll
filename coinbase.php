@@ -122,7 +122,7 @@ echo('<div id="manager"><span id="save_button_placeholder"></span><button onclic
 
 
 echo('<div id="welcome">');
-echo("<a class='btn' style='float: right' href='answers.php'>Click here to see poll answers</a>");
+echo("<a class='btn btnright' href='answers.php'>Click here to see poll answers</a>");
 echo('<h1>Hello '.$userdata['coinbase_userdata']['data']['name'].'</h1>');
 
 datadisclosure();

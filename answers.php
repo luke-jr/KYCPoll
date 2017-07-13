@@ -83,7 +83,7 @@ function allresults() {
 	global $pollcategories;
 	
 	echo('<div class="polls">');
-	echo("<a class='btn' style='float: right' href='coinbase.php'>Click here to take the poll</a>");
+	echo("<a class='btn btnright' href='coinbase.php'>Click here to take the poll</a>");
 	foreach ($pollcategories as $categoryname => $categoryhuman) {
 		categoryresults($categoryname, $categoryhuman);
 	}

@@ -43,6 +43,10 @@ a.btn:hover {
     background: #2f8abf;
     text-decoration: underline;
 }
+a.btn.btnright {
+	float: right;
+	margin-top: 20px;
+}
 
 .pollsection {
 	border-collapse: collapse;
@@ -81,6 +85,7 @@ h1 { color: #333; font-family: 'Helvetica Neue', sans-serif; font-size: 35px; fo
     width: 80%;
     max-width: 900px;
     padding: 20px;
+	padding-top: 0px;
     background: white;
     box-shadow: 0px 0px 5px white;
     border-radius: 10px;
