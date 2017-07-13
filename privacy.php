@@ -21,7 +21,7 @@ function filter_userdata(&$userdata) {
 			$payment_method['name'] = 'SEPA Transfer (account info deleted by KYCPoll)';
 		} else if (preg_match('/^Paypal Account: /', $payment_method['name'])) {
 			$payment_method['name'] = 'Paypal Account (account info deleted by KYCPoll)';
-		} else if (preg_match('/- Bank [\d*]*$/', $payment_method['name'])) {
+		} else if (preg_match('_bank_account$', $payment_method['type'])) {
 			$payment_method['name'] = 'Bank (account info deleted by KYCPoll)';
 		} else {
 			$payment_method['name'] = preg_replace('/[\d*]*\d[\d*]*/', '(number deleted by KYCPoll)', $payment_method['name']);
