@@ -11,11 +11,18 @@ function filter_if_exists(&$e) {
 }
 
 function filter_userdata(&$userdata) {
+	filter_if_exists($userdata['coinbase_userdata']['data']['name']);
+	filter_if_exists($userdata['coinbase_userdata']['data']['username']);
+	filter_if_exists($userdata['coinbase_userdata']['data']['profile_bio']);
+	filter_if_exists($userdata['coinbase_userdata']['data']['profile_url']);
+	filter_if_exists($userdata['coinbase_userdata']['data']['avatar_url']);
 	foreach ($userdata['coinbase_payment_methods']['data'] as &$payment_method) {
 		if (preg_match('/^SEPA Transfer \([\d\w ]*, reference [\d\w]*\)$/', $payment_method['name'])) {
 			$payment_method['name'] = 'SEPA Transfer (account info deleted by KYCPoll)';
 		} else if (preg_match('/^Paypal Account: /', $payment_method['name'])) {
 			$payment_method['name'] = 'Paypal Account (account info deleted by KYCPoll)';
+		} else if (preg_match('/- Bank [\d*]*$/', $payment_method['name'])) {
+			$payment_method['name'] = 'Bank (account info deleted by KYCPoll)';
 		} else {
 			$payment_method['name'] = preg_replace('/[\d*]*\d[\d*]*/', '(number deleted by KYCPoll)', $payment_method['name']);
 		}
@@ -29,6 +36,13 @@ function filter_userdata(&$userdata) {
 			}
 		}
 	}
+	if (@$userdata['coinbase_userdata_old']['user']['merchant']['company_name'] == @$userdata['coinbase_userdata_old']['user']['name']) {
+		// Only delete company name if it's a real person's name
+		$userdata['coinbase_userdata_old']['user']['merchant']['company_name'] = '(deleted by KYCPoll)';
+	}
 	filter_if_exists($userdata['coinbase_userdata_old']['user']['balance']['amount']);
+	filter_if_exists($userdata['coinbase_userdata_old']['user']['name']);
 	filter_if_exists($userdata['coinbase_userdata_old']['user']['email']);
+	filter_if_exists($userdata['coinbase_userdata_old']['user']['profile_description']);
+	filter_if_exists($userdata['coinbase_userdata_old']['user']['avatar_url']);
 }

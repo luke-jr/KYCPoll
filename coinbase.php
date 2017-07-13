@@ -96,6 +96,9 @@ if ((!isset($_SESSION['userdata'])) || @$_POST['userdata_refresh']) {
 		myerr("Failed to get Coinbase id; <a class='btn' href='?retry'>Click here to retry</a>");
 	}
 	
+	// Save for greeting (privacy will remove from userdata)
+	$_SESSION['fullname'] = $response['result']['data']['name'];
+	
 	$userdata = array(
 		'kycsource' => 'coinbase',
 		'uuid' => 'coinbase_' . $response['result']['data']['id'],
@@ -123,7 +126,7 @@ echo('<div id="manager"><span id="save_button_placeholder"></span><button onclic
 
 echo('<div id="welcome">');
 echo("<a class='btn btnright' href='answers.php'>Click here to see poll answers</a>");
-echo('<h1>Hello '.$userdata['coinbase_userdata']['data']['name'].'</h1>');
+echo('<h1>Hello '.$_SESSION['fullname'].'</h1>');
 
 datadisclosure();
 formbegin();
