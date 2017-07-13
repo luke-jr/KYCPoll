@@ -47,7 +47,7 @@ if (@$_POST['logout']) {
 if (!isset($_SESSION['access_token'])) {
 	if (!isset($_GET['code'])) {
 		$authUrl = $client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "wallet:payment-methods:read,wallet:payment-methods:limits", "state" => "dawgabsAv6"));
-		die("<div id='welcome'><h1>Log in with Coinbase</h1><p>To verify, please login with Coinbase and authorize KYCPoll to review your account information.</p><a class='btn redirectLink' href='$authUrl'>Click here to login</a></div>");
+		die("<div id='welcome'><h1>Log in with Coinbase</h1><p>To verify, please login with Coinbase and authorize KYCPoll to review your account information. <strong>Due to Coinbase API limitations, you will need to login twice.</strong></p><a class='btn redirectLink' href='$authUrl'>Click here to login (1 of 2)</a></div>");
 	} else {
 		$params = array("code" => $_GET["code"], "redirect_uri" => $redirectUrl);
 		$response = $client->getAccessToken($accessTokenUrl, "authorization_code", $params);
@@ -70,7 +70,7 @@ $old_client->setCurlOption(CURLOPT_FOLLOWLOCATION, true);
 if (!isset($_SESSION['access_token_old'])) {
 	if (!isset($_GET['code'])) {
 		$authUrl = $old_client->getAuthenticationUrl($authorizeUrl, $redirectUrl, array("scope" => "user", "state" => "dawgabsAv6"));
-		die("<div id='welcome'><h1>Log in with Coinbase</h1><p>Due to API limitations, we need you to login with Coinbase and authorize KYCPoll to review your account information one more time.</p><a class='btn redirectLink' href='$authUrl'>Click here to login</a></div>");
+		die("<div id='welcome'><h1>Log in with Coinbase</h1><p>Due to API limitations, we need you to login with Coinbase and authorize KYCPoll to review your account information one more time.</p><a class='btn redirectLink' href='$authUrl'>Click here to login (2 of 2)</a></div>");
 	} else {
 		$params = array("code" => $_GET["code"], "redirect_uri" => $redirectUrl);
 		$response = $old_client->getAccessToken($accessTokenUrl, "authorization_code", $params);
