@@ -55,7 +55,7 @@ function update_user_visibility() {
 function update_totals() {
 	global $pdo;
 	$totals = array();
-	$stmt = $pdo->prepare('SELECT t1.pollid AS pollid, t1.answer AS answer FROM answers t1 WHERE t1.time = (SELECT MAX(time) FROM answers t2 WHERE t2.userid = t1.userid AND t2.pollid = t1.pollid)');
+	$stmt = $pdo->prepare('SELECT t1.pollid AS pollid, t1.answer AS answer FROM answers t1 JOIN users ON (t1.userid = users.id) WHERE users.visible AND t1.time = (SELECT MAX(time) FROM answers t2 WHERE t2.userid = t1.userid AND t2.pollid = t1.pollid)');
 	$stmt->execute();
 	while (($row = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
 		$pollid = $row['pollid'];
