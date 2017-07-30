@@ -79,6 +79,12 @@ function mypoll($id, $title) {
 	global $stmt_update_answer;
 	global $do_save;
 	
+	$stmt_get_changable_polls->execute(array(':category' => $id));
+	$row = $stmt_get_changable_polls->fetch(PDO::FETCH_ASSOC);
+	if ($row === false) {
+		return;
+	}
+	
 	echo("<h1>$title</h1>");
 	echo('<table class="pollsection">');
 	echo("<tr><th>Do you agree with this?</th>");
@@ -86,8 +92,7 @@ function mypoll($id, $title) {
 		echo("<th>$optdesc</th>");
 	}
 	echo("</tr>");
-	$stmt_get_changable_polls->execute(array(':category' => $id));
-	while (($row = $stmt_get_changable_polls->fetch(PDO::FETCH_ASSOC)) !== false) {
+	for ( ; $row !== false; $row = $stmt_get_changable_polls->fetch(PDO::FETCH_ASSOC)) {
 		$pollid = $row['id'];
 		$val = $row['name'];
 		$desc = $row['description'];
