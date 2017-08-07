@@ -50,13 +50,14 @@ function pollresults($varbase, $answers) {
 	echo("</script>");
 }
 
-function categoryresults($id, $title) {
+function categoryresults($categoryinfo) {
 	global $opts;
 	global $pdo;
 	global $stmt_get_polls;
 	
+	$id = $categoryinfo['name'];
 	echo("<a name='$id' id='$id'>");
-	echo("<h1>$title</h1>");
+	echo("<h1>".$categoryinfo['title']."</h1>");
 	echo('<table class="pollsection">');
 	$stmt_get_polls->execute(array(':category' => $id));
 	while (($row = $stmt_get_polls->fetch(PDO::FETCH_ASSOC)) !== false) {
@@ -86,9 +87,7 @@ function allresults() {
 	echo("<a class='btn btnright' href='coinbase.php'>Click here to take the poll</a>");
 	$stmt_get_pollcategories->execute();
 	while (($row = $stmt_get_pollcategories->fetch(PDO::FETCH_ASSOC)) !== false) {
-		$categoryname = $row['name'];
-		$categoryhuman = $row['title'];
-		categoryresults($categoryname, $categoryhuman);
+		categoryresults($row);
 	}
 	echo('</div>');
 }

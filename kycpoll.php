@@ -71,7 +71,7 @@ function get_cur_answer($pollid) {
 $stmt_get_polls = $pdo->prepare("SELECT id, name, description FROM polls WHERE category = :category AND NOT hidden ORDER BY id");
 $stmt_get_changable_polls = $pdo->prepare("SELECT id, name, description FROM polls WHERE category = :category AND NOT hidden AND allowchange ORDER BY id");
 
-function mypoll($id, $title) {
+function mypoll($categoryinfo) {
 	global $opts;
 	global $sql_userid;
 	global $pdo;
@@ -79,13 +79,14 @@ function mypoll($id, $title) {
 	global $stmt_update_answer;
 	global $do_save;
 	
+	$id = $categoryinfo['name'];
 	$stmt_get_changable_polls->execute(array(':category' => $id));
 	$row = $stmt_get_changable_polls->fetch(PDO::FETCH_ASSOC);
 	if ($row === false) {
 		return;
 	}
 	
-	echo("<h1>$title</h1>");
+	echo("<h1>".$categoryinfo['title']."</h1>");
 	echo('<table class="pollsection">');
 	echo("<tr><th>Do you agree with this?</th>");
 	foreach ($opts as $opt => $optdesc) {
@@ -131,8 +132,6 @@ function polls() {
 	
 	$stmt_get_pollcategories->execute();
 	while (($row = $stmt_get_pollcategories->fetch(PDO::FETCH_ASSOC)) !== false) {
-		$categoryname = $row['name'];
-		$categoryhuman = $row['title'];
-		mypoll($categoryname, $categoryhuman);
+		mypoll($row);
 	}
 }
