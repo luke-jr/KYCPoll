@@ -87,6 +87,9 @@ function mypoll($categoryinfo) {
 	}
 	
 	echo("<h1>".$categoryinfo['title']."</h1>");
+	if (@$categoryinfo['details']) {
+		echo("<p>".$categoryinfo['details']."</p>");
+	}
 	echo('<table class="pollsection">');
 	echo("<tr><th>Do you agree with this?</th>");
 	foreach ($opts as $opt => $optdesc) {
@@ -118,7 +121,7 @@ function mypoll($categoryinfo) {
 	echo("</table>");
 }
 
-$stmt_get_pollcategories = $pdo->prepare("SELECT name, title FROM pollcategories ORDER BY sort, id");
+$stmt_get_pollcategories = $pdo->prepare("SELECT name, title, details FROM pollcategories ORDER BY sort, id");
 
 function polls() {
 	global $stmt_get_pollcategories;

@@ -58,6 +58,9 @@ function categoryresults($categoryinfo) {
 	$id = $categoryinfo['name'];
 	echo("<a name='$id' id='$id'>");
 	echo("<h1>".$categoryinfo['title']."</h1>");
+	if (@$categoryinfo['details']) {
+		echo("<p>".$categoryinfo['details']."</p>");
+	}
 	echo('<table class="pollsection">');
 	$stmt_get_polls->execute(array(':category' => $id));
 	while (($row = $stmt_get_polls->fetch(PDO::FETCH_ASSOC)) !== false) {
