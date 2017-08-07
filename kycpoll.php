@@ -74,7 +74,7 @@ $stmt_get_changable_polls = $pdo->prepare("SELECT id, name, description FROM pol
 function pollcategoryheading($categoryinfo) {
 	echo("<h1>".$categoryinfo['title']."</h1>");
 	if (@$categoryinfo['details']) {
-		echo("<p>".$categoryinfo['details']."</p>");
+		echo("<p class='pollcategory_details'>".$categoryinfo['details']."</p>");
 	}
 }
 
