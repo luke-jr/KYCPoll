@@ -117,18 +117,10 @@ function mypoll($id, $title) {
 	echo("</table>");
 }
 
-$pollcategories = array(
-	'segwit' => 'Segwit',
-	'bip148' => 'BIP148',
-	'blocksizehf' => 'Block size hardfork',
-	'hardfork' => 'Misc hardfork',
-	'softfork' => 'Misc softfork',
-	'governance' => 'Governance',
-	'social' => 'Social media',
-);
+$stmt_get_pollcategories = $pdo->prepare("SELECT name, title FROM pollcategories ORDER BY sort, id");
 
 function polls() {
-	global $pollcategories;
+	global $stmt_get_pollcategories;
 	global $userdata;
 	global $do_save;
 	
@@ -137,7 +129,10 @@ function polls() {
 		record_userdata();
 	}
 	
-	foreach ($pollcategories as $categoryname => $categoryhuman) {
+	$stmt_get_pollcategories->execute();
+	while (($row = $stmt_get_pollcategories->fetch(PDO::FETCH_ASSOC)) !== false) {
+		$categoryname = $row['name'];
+		$categoryhuman = $row['title'];
 		mypoll($categoryname, $categoryhuman);
 	}
 }

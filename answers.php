@@ -80,11 +80,14 @@ function categoryresults($id, $title) {
 }
 
 function allresults() {
-	global $pollcategories;
+	global $stmt_get_pollcategories;
 	
 	echo('<div class="polls">');
 	echo("<a class='btn btnright' href='coinbase.php'>Click here to take the poll</a>");
-	foreach ($pollcategories as $categoryname => $categoryhuman) {
+	$stmt_get_pollcategories->execute();
+	while (($row = $stmt_get_pollcategories->fetch(PDO::FETCH_ASSOC)) !== false) {
+		$categoryname = $row['name'];
+		$categoryhuman = $row['title'];
 		categoryresults($categoryname, $categoryhuman);
 	}
 	echo('</div>');
