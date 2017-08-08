@@ -13,6 +13,21 @@ $opts = array(
 	'strong_agree' => 'Strongly agree',
 );
 
+function sort_by_median_answer_count($prefer_more_answers) {
+	return function ($a, $b) use ($prefer_more_answers) {
+		$close_answer_threshold = 0x10;
+		if (abs($a['median_answer_count'] - $b['median_answer_count']) < $close_answer_threshold) {
+			// When it's close, sort by sort key and id instead
+			if ($a['sort'] == $b['sort']) {
+				return ($a['id'] > $b['id']) ? +1 : -1;
+			}
+			return ($a['sort'] > $b['sort']) ? +1 : -1;
+		}
+		$rv = $prefer_more_answers ? -1 : +1;
+		return ($a['median_answer_count'] > $b['median_answer_count']) ? $rv : -$rv;
+	};
+}
+
 $pdo = new PDO(
     'mysql:host=localhost;dbname=kycpoll_v1',
     $db_username,
@@ -125,7 +140,7 @@ function mypoll($categoryinfo) {
 	echo("</table>");
 }
 
-$stmt_get_pollcategories = $pdo->prepare("SELECT name, title, details FROM pollcategories ORDER BY sort, id");
+$stmt_get_pollcategories = $pdo->prepare("SELECT id, name, title, details, sort FROM pollcategories ORDER BY sort, id");
 
 function polls() {
 	global $stmt_get_pollcategories;

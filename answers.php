@@ -56,13 +56,16 @@ function get_category_results(&$categoryinfo) {
 	global $stmt_get_polls;
 	
 	$poll_data = array();
+	$answer_totals = array();
 	$stmt_get_polls->execute(array(':category' => $categoryinfo['name']));
 	while (($row = $stmt_get_polls->fetch(PDO::FETCH_ASSOC)) !== false) {
 		$row['answers'] = getpollresults($row['id']);
-		$answer_totals[] = max($row['answers']);
+		$answer_totals[] = array_sum($row['answers']);
 		$poll_data[] = $row;
 	}
 	$categoryinfo['polls'] = $poll_data;
+	sort($answer_totals);
+	$categoryinfo['median_answer_count'] = $answer_totals[floor(count($answer_totals) / 2)];
 }
 
 function show_category_results($categoryinfo) {
@@ -97,11 +100,18 @@ function show_category_results($categoryinfo) {
 function allresults() {
 	global $stmt_get_pollcategories;
 	
-	echo('<div class="polls">');
-	echo("<a class='btn btnright' href='coinbase.php'>Click here to take the poll</a>");
+	$all_category_results = array();
 	$stmt_get_pollcategories->execute();
 	while (($row = $stmt_get_pollcategories->fetch(PDO::FETCH_ASSOC)) !== false) {
 		get_category_results($row);
+		$all_category_results[] = $row;
+	}
+	
+	usort($all_category_results, sort_by_median_answer_count(true));
+	
+	echo('<div class="polls">');
+	echo("<a class='btn btnright' href='coinbase.php'>Click here to take the poll</a>");
+	foreach ($all_category_results as $row) {
 		show_category_results($row);
 	}
 	echo('</div>');
