@@ -32,7 +32,7 @@ function datadisclosure_checkbox() {
 function formend() {
 	echo("</form>");
 	echo('</div>');
-	echo("<br><br>(the save button is on the top-right corner of your window)");
+	echo("<br><br>(the save button is on the top-right corner of your window, after agreeing to the terms above)");
 }
 
 function pagefooter() {
